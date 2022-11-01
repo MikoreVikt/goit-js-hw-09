@@ -3,19 +3,13 @@ import 'flatpickr/dist/flatpickr.min.css';
 import Notiflix from 'notiflix';
 
 Notiflix.Notify.init({
-  position: 'center-top',
-  clickToClose: true,
+  position: 'right-top',
+  clickToClose: false,
 });
 
-const refs = {
-  input: document.querySelector(`#datetime-picker`),
-  btn: document.querySelector(`button[data-start]`),
-  days: document.querySelector('[data-days]'),
-  hours: document.querySelector('[data-hours]'),
-  minutes: document.querySelector('[data-minutes]'),
-  seconds: document.querySelector('[data-seconds]'),
-};
-refs.btn.disabled = true;
+const getEl = selector => document.querySelector(selector);
+getEl(`button[data-start]`).disabled = true;
+getEl(`button[data-stop]`).disabled = true;
 
 let timeDifference;
 
@@ -29,18 +23,21 @@ const options = {
     const selectedDate = selectedDates[0].getTime();
 
     if (selectedDate < currentDate) {
-      Notiflix.Notify.warning('Please choose a date in the future');
+      getEl(`button[data-start]`).disabled = true;
+
+      Notiflix.Notify.warning(`Please choose a date in the future`);
       Notiflix.Notify.warning('Пожалуйста, выберите дату в будущем');
     } else {
+      getEl(`button[data-start]`).disabled = false;
+      timeDifference = selectedDate - currentDate;
+
       Notiflix.Notify.success('Press "start" for countdown');
       Notiflix.Notify.success('Нажмите "start" для обратного отсчета');
-      refs.btn.disabled = false;
-      timeDifference = selectedDate - currentDate;
     }
   },
 };
 
-flatpickr(refs.input, options);
+flatpickr(getEl(`#datetime-picker`), options);
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -62,30 +59,50 @@ function convertMs(ms) {
 }
 
 function addLeadingZero(value) {
-  return String(value).padStart(2, 0);
+  return String(value).padStart(2, '0');
 }
 
 // =================================================================================
 
-refs.btn.addEventListener(`click`, () => {
+getEl(`button[data-start]`).addEventListener(`click`, () => {
   Notiflix.Notify.success('The countdown has begun!');
   Notiflix.Notify.success('Отсчет начался!');
 
-  refs.btn.disabled = true;
+  getEl(`button[data-start]`).disabled = true;
+  getEl(`button[data-stop]`).disabled = false;
 
   let intervalId = setInterval(() => {
-    let timeToCount = convertMs(timeDifference);
-    refs.days.textContent = addLeadingZero(timeToCount.days);
-    refs.hours.textContent = addLeadingZero(timeToCount.hours);
-    refs.minutes.textContent = addLeadingZero(timeToCount.minutes);
-    refs.seconds.textContent = addLeadingZero(timeToCount.seconds);
+    let convertedDate = convertMs(timeDifference);
+    getEl(`span[data-days]`).textContent = addLeadingZero(convertedDate.days);
+    getEl(`span[data-hours]`).textContent = addLeadingZero(convertedDate.hours);
+    getEl(`span[data-minutes]`).textContent = addLeadingZero(
+      convertedDate.minutes
+    );
+    getEl(`span[data-seconds]`).textContent = addLeadingZero(
+      convertedDate.seconds
+    );
 
     timeDifference -= 1000;
 
     if (timeDifference < 0) {
       clearInterval(intervalId);
+      getEl(`button[data-stop]`).disabled = true;
+
       Notiflix.Notify.info('Time is over!');
       Notiflix.Notify.info('Время вышло!');
     }
   }, 1000);
+
+  getEl(`button[data-stop]`).addEventListener(`click`, () => {
+    clearInterval(intervalId);
+    getEl(`#datetime-picker`).value = ``;
+    getEl(`span[data-days]`).textContent = `00`;
+    getEl(`span[data-hours]`).textContent = `00`;
+    getEl(`span[data-minutes]`).textContent = `00`;
+    getEl(`span[data-seconds]`).textContent = `00`;
+    getEl(`button[data-stop]`).disabled = true;
+
+    Notiflix.Notify.warning(`Oops... The timer has been reset!`);
+    Notiflix.Notify.warning('Упс... Таймер сброшен!');
+  });
 });
