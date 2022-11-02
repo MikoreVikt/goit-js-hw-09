@@ -6,9 +6,9 @@ Notiflix.Notify.init({
 });
 
 const getEl = selector => document.querySelector(selector);
-getEl(`form`).addEventListener(`submit`, onBtnClick);
+getEl(`form`).addEventListener(`submit`, onSubmitClick);
 
-function onBtnClick(e) {
+function onSubmitClick(e) {
   e.preventDefault();
   const el = e.target.elements;
   let delay = Number(el.delay.value);
