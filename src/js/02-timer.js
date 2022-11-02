@@ -32,7 +32,7 @@ const options = {
       timeDifference = selectedDate - currentDate;
 
       Notiflix.Notify.success('Press "start" for countdown');
-      Notiflix.Notify.success('Нажмите "start" для обратного отсчета');
+      Notiflix.Notify.success('Нажмите "start" для обратного отсчёта');
     }
   },
 };
@@ -66,7 +66,7 @@ function addLeadingZero(value) {
 
 getEl(`button[data-start]`).addEventListener(`click`, () => {
   Notiflix.Notify.success('The countdown has begun!');
-  Notiflix.Notify.success('Отсчет начался!');
+  Notiflix.Notify.success('Отсчёт начался!');
 
   getEl(`button[data-start]`).disabled = true;
   getEl(`button[data-stop]`).disabled = false;
@@ -95,7 +95,7 @@ getEl(`button[data-start]`).addEventListener(`click`, () => {
 
   getEl(`button[data-stop]`).addEventListener(`click`, () => {
     clearInterval(intervalId);
-    getEl(`#datetime-picker`).value = ``;
+    getEl(`#datetime-picker`).value = `   Выберите новую дату   `;
     getEl(`span[data-days]`).textContent = `00`;
     getEl(`span[data-hours]`).textContent = `00`;
     getEl(`span[data-minutes]`).textContent = `00`;
